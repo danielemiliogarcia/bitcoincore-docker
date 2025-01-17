@@ -1,0 +1,42 @@
+version: '3.9'
+
+networks:
+  my-bitcoin-regtest-network:
+    name: my-bitcoin-regtest-network
+    driver: bridge
+
+services:
+  bitcoin-regtest-node:
+    build:
+      context: ../.
+      dockerfile: Dockerfile
+      ## TO share volumes and avoir permission issues with chain data, fill that args with id -u and id -g
+      ## export UID=$(id -u) && export GID=$(id -g) && docker-compose up --build
+      # args:
+      #   UID: ${UID}   # Pass host UID
+      #   GID: ${GID}   # Pass host GID
+    image: mybitcoinnode:latest
+    container_name: my-bitcoin-regtest
+    ports:
+      - "18443:18443"
+      - "18444:18444"
+    networks:
+      - my-bitcoin-regtest-network
+    command:
+      - -printtoconsole
+      - -regtest=1
+      - -rpcallowip=0.0.0.0/0
+      - -rpcbind=0.0.0.0
+      - -rpcuser=bituser
+      - -rpcpassword=bitpass
+      - -fallbackfee=0.0001
+      - -minrelaytxfee=0.00001
+      - -maxtxfee=10000000
+      - -txindex
+      # - -debug=1
+      # - -debug=rpc
+      # - -debug=net
+      # - -debug=mempool
+      # - -debug=validation
+    restart: always
+
