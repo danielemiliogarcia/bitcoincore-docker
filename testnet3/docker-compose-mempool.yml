@@ -1,0 +1,67 @@
+version: '3.8'
+
+networks:
+  my-bitcoin-testnet3-network:
+    name: my-bitcoin-testnet3-network
+    driver: bridge
+
+services:
+
+  web:
+    image: mempool/frontend:latest
+    container_name: testnet3-web
+    environment:
+      FRONTEND_HTTP_PORT: "8080"
+      BACKEND_MAINNET_HTTP_HOST: "api"
+    depends_on:
+      - api
+    user: "1000:1000"
+    restart: always
+    stop_grace_period: 10s
+    command: "./wait-for db:3306 --timeout=720 -- nginx -g 'daemon off;'"
+    ports:
+      - "1081:8080"
+    networks:
+      - my-bitcoin-testnet3-network
+
+  api:
+    image: mempool/backend:latest
+    container_name: testnet3-api
+    environment:
+      MEMPOOL_BACKEND: "none"
+      CORE_RPC_HOST: "bitcoin-testnet3-node" # "172.17.0.1" # host.docker.internal # For Docker Desktop
+      CORE_RPC_PORT: "18332"
+      CORE_RPC_USERNAME: "bituser"
+      CORE_RPC_PASSWORD: "bitpass"
+      DATABASE_ENABLED: "true"
+      DATABASE_HOST: "db"
+      DATABASE_DATABASE: "mempool"
+      DATABASE_USERNAME: "mempool"
+      DATABASE_PASSWORD: "mempool"
+      STATISTICS_ENABLED: "true"
+    depends_on:
+      - db
+    user: "1000:1000"
+    restart: on-failure
+    stop_grace_period: 5s
+    command: "./wait-for-it.sh db:3306 --timeout=720 --strict -- ./start.sh"
+    volumes:
+      - .datapi/:/backend/cache
+    networks:
+      - my-bitcoin-testnet3-network
+
+  db:
+    image: mariadb:10.5.8
+    container_name: testnet3-db
+    environment:
+      MYSQL_DATABASE: "mempool"
+      MYSQL_USER: "mempool"
+      MYSQL_PASSWORD: "mempool"
+      MYSQL_ROOT_PASSWORD: "admin"
+    restart: always
+    stop_grace_period: 10s
+    networks:
+      - my-bitcoin-testnet3-network
+
+
+

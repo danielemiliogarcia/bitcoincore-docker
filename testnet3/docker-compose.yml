@@ -1,0 +1,43 @@
+version: '3.9'
+
+networks:
+  my-bitcoin-testnet3-network:
+    name: my-bitcoin-testnet3-network
+    driver: bridge
+
+services:
+  bitcoin-testnet3-node:
+    build:
+      context: ../.
+      dockerfile: Dockerfile
+      ## TO share volumes and avoir permission issues with chain data, fill that args with id -u and id -g
+      ## export UID=$(id -u) && export GID=$(id -g) && docker-compose up --build
+      args:
+        UID: ${UID}   # Pass host UID
+        GID: ${GID}   # Pass host GID
+    image: mybitcoinnode:latest
+    container_name: my-bitcoin-testnet3
+    ports:
+      - "18332:18332"
+      - "18333:18333"
+    networks:
+      - my-bitcoin-testnet3-network
+    command:
+      - -printtoconsole
+      - -testnet=1
+      - -rpcallowip=0.0.0.0/0
+      - -rpcbind=0.0.0.0
+      - -rpcuser=bituser
+      - -rpcpassword=bitpass
+      - -prune=550 # choose prune or txindex, both are incompatible
+      # - -txindex
+      # - -fallbackfee=0.0001
+      # - -minrelaytxfee=0.00001
+      # - -maxtxfee=10000000
+      # - -debug=1
+      # - -debug=rpc
+      # - -debug=net
+      # - -debug=mempool
+      # - -debug=validation
+    restart: always
+
