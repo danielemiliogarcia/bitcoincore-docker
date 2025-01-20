@@ -6,8 +6,9 @@
 ```
 
 ## Run with compose
+(UID should be set and is readonly, add GID)
 ```
-docker-compose up
+export GID=$(id -g) && docker-compose up
 ```
 
 ## RPC password

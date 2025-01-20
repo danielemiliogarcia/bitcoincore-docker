@@ -22,6 +22,8 @@ services:
       - "18333:18333"
     networks:
       - my-bitcoin-testnet3-network
+    volumes:
+      - ./testnet-data:/home/bitcoin/.bitcoin
     command:
       - -printtoconsole
       - -testnet=1
@@ -40,4 +42,3 @@ services:
       # - -debug=mempool
       # - -debug=validation
     restart: always
-
