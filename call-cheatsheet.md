@@ -1,22 +1,4 @@
 # Bitcoin Node Calls Cheatsheet
-source : https://github.com/ruimarinho/docker-bitcoin-core
-
-## Spin a Regtest Node in Docker
-
-```bash
-docker run --rm --name bitcoin-server -it \
-  -p 18443:18443 \
-  -p 18444:18444 \
-  ruimarinho/bitcoin-core:24.0.1 \
-  -printtoconsole \
-  -regtest=1 \
-  -rpcallowip=172.17.0.0/16 \
-  -rpcbind=0.0.0.0 \
-  -rpcauth='bituser:337f951003371b21ba0a964464a1d34a$591adbcccece2e5bc1fdd8426c3aa9441a8a6c5cf0fa9a3ed6f7f53029e76130' \
-  -fallbackfee=0.0001 \
-  -minrelaytxfee=0.00001 \
-  -maxtxfee=10000000 -txindex
-```
 
 ## Get a Shell Inside the Container and Run Commands
 
